@@ -1,0 +1,103 @@
+# Sistema simples para assistência técnica TechFix
+
+# ==========================
+# Parte 1 - Tabelas de serviços
+# ==========================
+servicos = {
+    "formatação": 80,
+    "limpeza geral": 50,
+    "remoção de vírus": 60,
+    "instalação de programas": 40
+}
+
+# Estoque inicial (nome: quantidade)
+estoque = {
+    "memória RAM": 10,
+    "HD": 5,
+    "SSD": 7,
+    "fonte": 4,
+    "placa de vídeo": 3
+}
+
+# Lista para registrar os reparos feitos
+reparos = []
+
+# ==========================
+# Parte 2 - Funções do sistema
+# ==========================
+
+def listar_servicos():
+    print("\n--- Lista de Serviços ---")
+    for nome, preco in servicos.items():
+        print(f"{nome} - R$ {preco}")
+    print("-------------------------")
+
+def adicionar_reparo(cliente, descricao, preco, tecnico):
+    """Registra um novo reparo feito"""
+    reparo = {
+        "cliente": cliente,
+        "descricao": descricao,
+        "preco": preco,
+        "tecnico": tecnico,
+        "status": "em análise"
+    }
+    reparos.append(reparo)
+    print(f"\n[OK] Reparo adicionado para {cliente}.")
+
+def atualizar_status(cliente, novo_status):
+    """Atualiza o status do equipamento do cliente"""
+    for r in reparos:
+        if r["cliente"] == cliente:
+            r["status"] = novo_status
+            print(f"[OK] Status atualizado para '{novo_status}'.")
+            return
+    print("[ERRO] Cliente não encontrado.")
+
+def consultar_status(cliente):
+    """Consulta em que fase está o computador do cliente"""
+    for r in reparos:
+        if r["cliente"] == cliente:
+            print(f"O computador de {cliente} está: {r['status']}")
+            return
+    print("[ERRO] Cliente não encontrado.")
+
+def vender_peca(nome_peca, quantidade):
+    """Tira peças do estoque e avisa se estiver acabando"""
+    if nome_peca in estoque:
+        if estoque[nome_peca] >= quantidade:
+            estoque[nome_peca] -= quantidade
+            print(f"[OK] {quantidade}x {nome_peca} vendida(s). Restam {estoque[nome_peca]}.")
+            if estoque[nome_peca] <= 2:
+                print(">>> Atenção: estoque baixo, faça reposição!")
+        else:
+            print("[ERRO] Quantidade maior do que no estoque.")
+    else:
+        print("[ERRO] Peça não encontrada.")
+
+def gerar_relatorio():
+    """Relatório simples do mês"""
+    print("\n--- Relatório ---")
+    print(f"Total de reparos: {len(reparos)}")
+    tecnicos = {}
+    for r in reparos:
+        t = r["tecnico"]
+        tecnicos[t] = tecnicos.get(t, 0) + 1
+    print("Serviços por técnico:")
+    for t, qtd in tecnicos.items():
+        print(f" - {t}: {qtd} serviços")
+    print("-----------------")
+
+# ==========================
+# Parte 3 - Exemplo de uso
+# ==========================
+listar_servicos()
+
+adicionar_reparo("João", "Formatação e limpeza", 130, "Carlos")
+consultar_status("João")
+atualizar_status("João", "em manutenção")
+consultar_status("João")
+
+vender_peca("SSD", 2)
+vender_peca("fonte", 3)
+
+gerar_relatorio()
